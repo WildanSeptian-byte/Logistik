@@ -29,83 +29,96 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  // 1. Ambil data master material & relasinya dari Turso DB
-  const allItems = await db
-    .select({
-      id: items.id,
-      code: items.code,
-      name: items.name,
-      currentStock: items.currentStock,
-      minimumStock: items.minimumStock,
-      categoryName: categories.name,
-      unitSymbol: units.symbol,
-    })
-    .from(items)
-    .leftJoin(categories, eq(items.categoryId, categories.id))
-    .leftJoin(units, eq(items.unitId, units.id));
+  // Ambil data dengan perlindungan try-catch agar halaman tidak crash jika env Vercel belum lengkap
+  let allItems: any[] = [];
+  let supplierCount = 0;
+  let totalInQty = 0;
+  let totalOutQty = 0;
+  let recentActivities: any[] = [];
+  let dbError: string | null = null;
 
-  // 2. Ambil total jumlah vendor
-  const supplierCount = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(suppliers)
-    .then((res) => res[0]?.count || 0);
+  try {
+    // 1. Ambil data master material & relasinya dari Turso DB
+    allItems = await db
+      .select({
+        id: items.id,
+        code: items.code,
+        name: items.name,
+        currentStock: items.currentStock,
+        minimumStock: items.minimumStock,
+        categoryName: categories.name,
+        unitSymbol: units.symbol,
+      })
+      .from(items)
+      .leftJoin(categories, eq(items.categoryId, categories.id))
+      .leftJoin(units, eq(items.unitId, units.id));
 
-  // 3. Ambil agregasi pergerakan barang masuk & keluar
-  const totalInQty = await db
-    .select({ sum: sql<number>`coalesce(sum(${incomingItems.quantity}), 0)` })
-    .from(incomingItems)
-    .then((res) => res[0]?.sum || 0);
+    // 2. Ambil total jumlah vendor
+    supplierCount = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(suppliers)
+      .then((res) => res[0]?.count || 0);
 
-  const totalOutQty = await db
-    .select({ sum: sql<number>`coalesce(sum(${outgoingItems.quantity}), 0)` })
-    .from(outgoingItems)
-    .then((res) => res[0]?.sum || 0);
+    // 3. Ambil agregasi pergerakan barang masuk & keluar
+    totalInQty = await db
+      .select({ sum: sql<number>`coalesce(sum(${incomingItems.quantity}), 0)` })
+      .from(incomingItems)
+      .then((res) => res[0]?.sum || 0);
 
-  // 4. Ambil 4 transaksi masuk terbaru
-  const recentIn = await db
-    .select({
-      id: incomingTransactions.id,
-      ref: incomingTransactions.invoiceNumber,
-      date: incomingTransactions.transactionDate,
-      party: suppliers.name,
-    })
-    .from(incomingTransactions)
-    .leftJoin(suppliers, eq(incomingTransactions.supplierId, suppliers.id))
-    .orderBy(desc(incomingTransactions.id))
-    .limit(4);
+    totalOutQty = await db
+      .select({ sum: sql<number>`coalesce(sum(${outgoingItems.quantity}), 0)` })
+      .from(outgoingItems)
+      .then((res) => res[0]?.sum || 0);
 
-  // 5. Ambil 4 transaksi keluar terbaru
-  const recentOut = await db
-    .select({
-      id: outgoingTransactions.id,
-      ref: outgoingTransactions.referenceNumber,
-      date: outgoingTransactions.transactionDate,
-      party: outgoingTransactions.recipientName,
-      section: outgoingTransactions.projectSection,
-    })
-    .from(outgoingTransactions)
-    .orderBy(desc(outgoingTransactions.id))
-    .limit(4);
+    // 4. Ambil 4 transaksi masuk terbaru
+    const recentIn = await db
+      .select({
+        id: incomingTransactions.id,
+        ref: incomingTransactions.invoiceNumber,
+        date: incomingTransactions.transactionDate,
+        party: suppliers.name,
+      })
+      .from(incomingTransactions)
+      .leftJoin(suppliers, eq(incomingTransactions.supplierId, suppliers.id))
+      .orderBy(desc(incomingTransactions.id))
+      .limit(4);
 
-  // Gabungkan dan urutkan aktivitas transaksi terbaru
-  const recentActivities = [
-    ...recentIn.map((t) => ({
-      id: `in-${t.id}`,
-      type: "IN" as const,
-      ref: t.ref,
-      date: t.date,
-      party: `Dari: ${t.party || "Supplier"}`,
-      sub: "Surat Jalan Penerimaan",
-    })),
-    ...recentOut.map((t) => ({
-      id: `out-${t.id}`,
-      type: "OUT" as const,
-      ref: t.ref,
-      date: t.date,
-      party: `Untuk: ${t.party}`,
-      sub: t.section || "Pengeluaran Material Lapangan",
-    })),
-  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
+    // 5. Ambil 4 transaksi keluar terbaru
+    const recentOut = await db
+      .select({
+        id: outgoingTransactions.id,
+        ref: outgoingTransactions.referenceNumber,
+        date: outgoingTransactions.transactionDate,
+        party: outgoingTransactions.recipientName,
+        section: outgoingTransactions.projectSection,
+      })
+      .from(outgoingTransactions)
+      .orderBy(desc(outgoingTransactions.id))
+      .limit(4);
+
+    // Gabungkan dan urutkan aktivitas transaksi terbaru
+    recentActivities = [
+      ...recentIn.map((t) => ({
+        id: `in-${t.id}`,
+        type: "IN" as const,
+        ref: t.ref,
+        date: t.date,
+        party: `Dari: ${t.party || "Supplier"}`,
+        sub: "Surat Jalan Penerimaan",
+      })),
+      ...recentOut.map((t) => ({
+        id: `out-${t.id}`,
+        type: "OUT" as const,
+        ref: t.ref,
+        date: t.date,
+        party: `Untuk: ${t.party}`,
+        sub: t.section || "Pengeluaran Material Lapangan",
+      })),
+    ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
+  } catch (err: any) {
+    console.error("Gagal mengambil data dari Turso DB:", err);
+    dbError = err?.message || "Koneksi ke database Turso gagal.";
+  }
 
   // Hitung metrik
   const totalItemCount = allItems.length;
@@ -152,6 +165,19 @@ export default async function DashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* Pesan Error Koneksi Database Jika Env Vercel Belum Terbaca */}
+      {dbError && (
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 space-y-2">
+          <div className="flex items-center space-x-2 font-bold text-rose-900">
+            <AlertTriangle className="w-4 h-4 text-rose-600" />
+            <span>Koneksi Database Turso Belum Terbaca di Vercel</span>
+          </div>
+          <p className="leading-relaxed">
+            Penyebab: <strong>{dbError}</strong>. Silakan periksa menu <strong>Settings &rarr; Environment Variables</strong> di Vercel, pastikan <code>TURSO_DATABASE_URL</code> dan <code>TURSO_AUTH_TOKEN</code> sudah terisi, lalu lakukan <strong>Redeploy</strong>.
+          </p>
+        </div>
+      )}
 
       {/* Grid 4 Kartu Metrik Utama */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
