@@ -38,6 +38,10 @@ export default async function DashboardPage() {
   let dbError: string | null = null;
 
   try {
+    // Pastikan seluruh tabel dan data seed sudah siap di database Turso
+    const { ensureDatabaseInitialized } = await import("@/db/init");
+    await ensureDatabaseInitialized();
+
     // 1. Ambil data master material & relasinya dari Turso DB
     allItems = await db
       .select({

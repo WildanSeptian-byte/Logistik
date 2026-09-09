@@ -15,6 +15,10 @@ export async function GET() {
     : "TIDAK DITEMUKAN (KOSONG)";
 
   try {
+    // Inisialisasi tabel dan seed otomatis jika database di Vercel masih baru/kosong
+    const { ensureDatabaseInitialized } = await import("@/db/init");
+    await ensureDatabaseInitialized();
+
     // Uji coba query ke database Turso
     const testQuery = await db.select().from(items).limit(1);
 
