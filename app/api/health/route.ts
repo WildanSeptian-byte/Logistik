@@ -33,6 +33,8 @@ export async function GET() {
         message: "Gagal menghubungkan ke Turso DB dari server Vercel",
         errorName: err?.name || "UnknownError",
         errorMessage: err?.message || String(err),
+        errorCause: err?.cause ? String(err.cause?.message || err.cause) : null,
+        rawError: JSON.stringify(err, Object.getOwnPropertyNames(err)),
         hasUrl,
         hasToken,
         maskedUrl,
@@ -41,3 +43,4 @@ export async function GET() {
     );
   }
 }
+
