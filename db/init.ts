@@ -1,6 +1,7 @@
 import { db } from "./index";
 import { sql } from "drizzle-orm";
-import { categories, units, locations, suppliers, items } from "./schema";
+import { users, categories, units, locations, suppliers, items } from "./schema";
+import bcrypt from "bcryptjs";
 
 let isInitialized = false;
 
@@ -8,7 +9,19 @@ export async function ensureDatabaseInitialized() {
   if (isInitialized) return;
 
   try {
-    // 1. Buat seluruh tabel jika belum ada di database Turso
+    // 0. Buat tabel users jika belum ada
+    await db.run(sql`
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL,
+        password TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'staf_logistik',
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // 1. Buat seluruh tabel master jika belum ada di database Turso
     await db.run(sql`
       CREATE TABLE IF NOT EXISTS categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -210,9 +223,33 @@ export async function ensureDatabaseInitialized() {
       ]);
     }
 
+    // 3. Cek apakah tabel users sudah memiliki akun default; jika belum, buat akun admin & site manager
+    const existingUsers = await db.select().from(users).limit(1);
+    if (existingUsers.length === 0) {
+      console.log("👤 Membuat akun default staf logistik dan site manager...");
+      const passwordAdmin = bcrypt.hashSync("admin123", 10);
+      const passwordManager = bcrypt.hashSync("manager123", 10);
+
+      await db.insert(users).values([
+        {
+          username: "admin",
+          name: "Bpk. Agus Prasetyo",
+          password: passwordAdmin,
+          role: "staf_logistik",
+        },
+        {
+          username: "sitemanager",
+          name: "Ir. Hendrawan, S.T.",
+          password: passwordManager,
+          role: "site_manager",
+        },
+      ]);
+    }
+
     isInitialized = true;
   } catch (error) {
     console.error("Error ensureDatabaseInitialized:", error);
     throw error;
   }
 }
+

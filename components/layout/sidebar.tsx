@@ -13,8 +13,10 @@ import {
   HardHat,
   X,
   Layers,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { logoutAction } from "@/actions/auth";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -133,17 +135,26 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           ))}
         </div>
 
-        {/* Footer Sidebar (Status KP) */}
-        <div className="p-4 border-t border-slate-800 bg-slate-950/30">
-          <div className="px-3 py-2.5 rounded-lg bg-slate-800/60 border border-slate-700/50">
-            <p className="text-[11px] text-slate-400">Status Operasional</p>
-            <div className="flex items-center space-x-2 mt-1">
+        {/* Footer Sidebar (Status KP & Logout) */}
+        <div className="p-4 border-t border-slate-800 bg-slate-950/30 space-y-2">
+          <div className="px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
+            <p className="text-[10px] text-slate-400">Status Operasional</p>
+            <div className="flex items-center space-x-2 mt-0.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-medium text-slate-200">
+              <span className="text-[11px] font-medium text-slate-200">
                 Database Turso Online
               </span>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={() => logoutAction()}
+            className="w-full flex items-center justify-center space-x-2 px-3 py-2 rounded-lg bg-slate-800/40 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 text-xs font-medium transition-colors border border-transparent hover:border-rose-900/50 cursor-pointer"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Keluar Sistem</span>
+          </button>
         </div>
       </aside>
     </>

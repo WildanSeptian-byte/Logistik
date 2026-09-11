@@ -1,6 +1,18 @@
 import { sql } from "drizzle-orm";
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 
+// 0. Tabel Pengguna Sistem (Autentikasi & Hak Akses)
+export const users = sqliteTable("users", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  username: text("username").notNull().unique(),
+  name: text("name").notNull(),
+  password: text("password").notNull(), // Password terenkripsi bcrypt
+  role: text("role").notNull().default("staf_logistik"), // 'staf_logistik' | 'site_manager'
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
+
 // 1. Tabel Kategori Barang (misal: Material Pokok, Alat Kerja, Besi & Baja, APD)
 export const categories = sqliteTable("categories", {
   id: integer("id").primaryKey({ autoIncrement: true }),
