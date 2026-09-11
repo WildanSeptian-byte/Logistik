@@ -1,16 +1,21 @@
 "use client";
 
 import React, { useTransition } from "react";
-import { Menu, Calendar, Building2, User, LogOut, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Menu, Calendar, Building2, User, LogOut, Loader2, ChevronRight } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { logoutAction } from "@/actions/auth";
+import type { SessionUser } from "@/lib/auth";
 
 interface NavbarProps {
   onOpenMobileMenu: () => void;
+  user?: SessionUser | null;
 }
 
-export function Navbar({ onOpenMobileMenu }: NavbarProps) {
+export function Navbar({ onOpenMobileMenu, user }: NavbarProps) {
   const today = new Date();
+  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
   const handleLogout = () => {
@@ -46,19 +51,45 @@ export function Navbar({ onOpenMobileMenu }: NavbarProps) {
           <span>{formatDate(today)}</span>
         </div>
 
-        {/* Profil Sesi Pengguna */}
-        <div className="flex items-center space-x-2.5 pl-2 sm:border-l sm:border-slate-200">
-          <div className="w-8 h-8 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800">
-            <User className="w-4 h-4" />
-          </div>
-          <div className="hidden sm:block text-left">
-            <p className="text-xs font-semibold text-slate-800 leading-tight">
-              Sesi Aktif
-            </p>
-            <p className="text-[10px] text-emerald-600 font-medium leading-tight">
-              Terverifikasi
-            </p>
-          </div>
+        {/* Tombol Profil Pengguna (Dapat Diklik untuk Membuka Profil & Ganti Password) */}
+        <div className="flex items-center space-x-1 sm:space-x-2 pl-2 sm:border-l sm:border-slate-200">
+          <Link
+            href="/profile"
+            className={`flex items-center space-x-2.5 p-1.5 rounded-lg transition-all group cursor-pointer ${
+              pathname === "/profile"
+                ? "bg-amber-50 ring-1 ring-amber-300"
+                : "hover:bg-slate-100"
+            }`}
+            title="Buka Pengaturan Profil & Keamanan"
+          >
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                pathname === "/profile"
+                  ? "bg-amber-500 text-slate-950 font-bold shadow-xs"
+                  : "bg-amber-100 border border-amber-300 text-amber-800 group-hover:bg-amber-200 group-hover:border-amber-400"
+              }`}
+            >
+              <User className="w-4 h-4" />
+            </div>
+            <div className="hidden sm:block text-left">
+              <p className="text-xs font-semibold text-slate-800 leading-tight group-hover:text-amber-600 transition-colors">
+                {user?.name || "Profil Saya"}
+              </p>
+              <p className="text-[10px] text-slate-500 font-medium leading-tight flex items-center gap-1">
+                <span className="text-emerald-600 font-semibold">
+                  @{user?.username || "pengguna"}
+                </span>
+                <span>•</span>
+                <span className="capitalize">
+                  {user?.role === "admin"
+                    ? "Staf Logistik"
+                    : user?.role === "sitemanager"
+                    ? "Site Manager"
+                    : (user?.role || "Staf")}
+                </span>
+              </p>
+            </div>
+          </Link>
 
           {/* Tombol Logout */}
           <button
