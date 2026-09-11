@@ -33,11 +33,6 @@ export function LoginForm() {
     });
   };
 
-  const handleQuickFill = (u: string, p: string) => {
-    setUsername(u);
-    setPassword(p);
-  };
-
   return (
     <div className="w-full max-w-md space-y-6">
       {/* Brand & Logo Proyek */}
@@ -134,39 +129,10 @@ export function LoginForm() {
           </button>
         </form>
 
-        {/* Informasi Akun Demo / Default */}
-        <div className="pt-4 border-t border-slate-800/80 space-y-2.5">
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-center">
-            Pilihan Akun Uji Coba (KP Demo):
-          </p>
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <button
-              type="button"
-              onClick={() => handleQuickFill("admin", "admin123")}
-              className="p-2 bg-slate-950/60 hover:bg-slate-800/60 border border-slate-800 rounded-lg text-left transition-colors cursor-pointer"
-            >
-              <p className="font-semibold text-amber-400">Staf Logistik</p>
-              <p className="text-[10px] text-slate-400 font-mono mt-0.5">
-                user: admin
-              </p>
-              <p className="text-[10px] text-slate-500 font-mono">pass: admin123</p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickFill("sitemanager", "manager123")}
-              className="p-2 bg-slate-950/60 hover:bg-slate-800/60 border border-slate-800 rounded-lg text-left transition-colors cursor-pointer"
-            >
-              <p className="font-semibold text-purple-400">Site Manager</p>
-              <p className="text-[10px] text-slate-400 font-mono mt-0.5">
-                user: sitemanager
-              </p>
-              <p className="text-[10px] text-slate-500 font-mono">pass: manager123</p>
-            </button>
-          </div>
-          <p className="text-[10px] text-slate-500 text-center italic">
-            *Klik salah satu kartu di atas untuk mengisi form secara otomatis.
-          </p>
+        {/* Indikator Keamanan Sesi */}
+        <div className="pt-4 border-t border-slate-800/80 flex items-center justify-center space-x-2 text-[11px] text-slate-500">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span>Sesi Terenkripsi & Dilindungi Kriptografi</span>
         </div>
       </div>
     </div>

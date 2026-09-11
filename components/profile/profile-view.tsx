@@ -546,3 +546,4 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
     </div>
   );
 }
+

@@ -37,3 +37,4 @@ export default async function ProfilePage() {
 
   return <ProfileView initialUser={userRecord} />;
 }
+
