@@ -448,16 +448,11 @@ export function ReportView({
               <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                 I. Ringkasan Rekapitulasi Arus Stok Material
               </h3>
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] text-slate-500 print:hidden hidden sm:inline">
-                  {onlyMutated
-                    ? "(Menampilkan material yang bermutasi)"
-                    : "(Menampilkan seluruh katalog)"}
-                </span>
-                <span className="sm:hidden inline-flex items-center gap-1 text-[10px] text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/80 font-medium">
-                  ↔ Geser tabel ke kanan
-                </span>
-              </div>
+              <span className="text-[11px] text-slate-500 print:hidden">
+                {onlyMutated
+                  ? "(Menampilkan material yang bermutasi)"
+                  : "(Menampilkan seluruh katalog)"}
+              </span>
             </div>
 
             <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
@@ -574,9 +569,6 @@ export function ReportView({
               <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                 II. Rincian Kronologis Mutasi Transaksi
               </h3>
-              <span className="sm:hidden inline-flex items-center gap-1 text-[10px] text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/80 font-medium">
-                ↔ Geser tabel ke kanan
-              </span>
             </div>
             <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
               <div className="overflow-x-auto">
