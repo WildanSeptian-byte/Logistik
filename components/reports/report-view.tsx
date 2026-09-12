@@ -448,11 +448,6 @@ export function ReportView({
               <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                 I. Ringkasan Rekapitulasi Arus Stok Material
               </h3>
-              <span className="text-[11px] text-slate-500 print:hidden">
-                {onlyMutated
-                  ? "(Menampilkan material yang bermutasi)"
-                  : "(Menampilkan seluruh katalog)"}
-              </span>
             </div>
 
             <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
