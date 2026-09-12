@@ -410,16 +410,16 @@ export function ReportView({
       {/* ========================================================= */}
       {/* AREA CETAK LAPORAN RESMI (Tampil Bagus di Layar & Print PDF) */}
       {/* ========================================================= */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-2xs print:border-none print:shadow-none print:p-0">
+      <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-8 shadow-2xs print:border-none print:shadow-none print:p-0">
         {/* KOP Surat Resmi Proyek */}
         <div className="border-b-2 border-slate-900 pb-4 mb-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold shrink-0">
                 <HardHat className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-lg font-black tracking-tight text-slate-900 uppercase">
+                <h1 className="text-base sm:text-lg font-black tracking-tight text-slate-900 uppercase">
                   LAPORAN MUTASI & REKAPITULASI LOGISTIK PROYEK
                 </h1>
                 <p className="text-xs text-slate-600">
@@ -427,7 +427,7 @@ export function ReportView({
                 </p>
               </div>
             </div>
-            <div className="text-right text-[11px] text-slate-500">
+            <div className="text-left sm:text-right text-[11px] text-slate-500 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
               <p>
                 Periode Laporan:{" "}
                 <span className="font-bold text-slate-900">
@@ -444,114 +444,121 @@ export function ReportView({
         {/* KONTEN TAB 1: REKAPITULASI STOK */}
         {(activeTab === "rekap" || typeof window !== "undefined") && (
           <div className={activeTab === "rekap" ? "block" : "hidden print:block"}>
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between gap-2 mb-3">
               <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                 I. Ringkasan Rekapitulasi Arus Stok Material
               </h3>
-              <span className="text-[11px] text-slate-500 print:hidden">
-                {onlyMutated
-                  ? "(Menampilkan material yang bermutasi)"
-                  : "(Menampilkan seluruh katalog)"}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-slate-500 print:hidden hidden sm:inline">
+                  {onlyMutated
+                    ? "(Menampilkan material yang bermutasi)"
+                    : "(Menampilkan seluruh katalog)"}
+                </span>
+                <span className="sm:hidden inline-flex items-center gap-1 text-[10px] text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/80 font-medium">
+                  ↔ Geser tabel ke kanan
+                </span>
+              </div>
             </div>
 
-            <div className="border border-slate-200 rounded-lg overflow-hidden">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
-                  <tr>
-                    <th className="px-4 py-2.5 text-center w-10">No</th>
-                    <th className="px-4 py-2.5">Kode Material</th>
-                    <th className="px-4 py-2.5">Nama Material</th>
-                    <th className="px-4 py-2.5 text-right text-emerald-700 bg-emerald-50/60">
-                      Barang Masuk
-                    </th>
-                    <th className="px-4 py-2.5 text-right text-amber-700 bg-amber-50/60">
-                      Barang Keluar
-                    </th>
-                    <th className="px-4 py-2.5 text-right font-bold">
-                      Saldo Fisik Gudang
-                    </th>
-                    <th className="px-4 py-2.5 text-center">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {rekapData.length === 0 ? (
+            <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[720px] text-left text-xs">
+                  <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
                     <tr>
-                      <td
-                        colSpan={7}
-                        className="px-6 py-12 text-center text-slate-400 text-xs"
-                      >
-                        <p className="font-semibold text-slate-600 text-sm">
-                          Tidak ada aktivitas mutasi barang masuk atau keluar
-                        </p>
-                        <p className="mt-1 text-slate-400">
-                          Pada periode tanggal{" "}
-                          <span className="font-medium text-slate-600">
-                            {filterMode === "single"
-                              ? formatDate(activeStart)
-                              : `${formatDate(activeStart)} s/d ${formatDate(activeEnd)}`}
-                          </span>
-                        </p>
-                        {onlyMutated && (
-                          <button
-                            type="button"
-                            onClick={() => setOnlyMutated(false)}
-                            className="mt-3 text-xs text-amber-600 hover:underline print:hidden font-medium"
-                          >
-                            Klik di sini untuk melihat saldo seluruh katalog barang &rarr;
-                          </button>
-                        )}
-                      </td>
+                      <th className="px-4 py-2.5 text-center w-10 whitespace-nowrap">No</th>
+                      <th className="px-4 py-2.5 whitespace-nowrap">Kode Material</th>
+                      <th className="px-4 py-2.5 whitespace-nowrap min-w-[160px]">Nama Material</th>
+                      <th className="px-4 py-2.5 text-right text-emerald-700 bg-emerald-50/60 whitespace-nowrap">
+                        Barang Masuk
+                      </th>
+                      <th className="px-4 py-2.5 text-right text-amber-700 bg-amber-50/60 whitespace-nowrap">
+                        Barang Keluar
+                      </th>
+                      <th className="px-4 py-2.5 text-right font-bold whitespace-nowrap">
+                        Saldo Fisik Gudang
+                      </th>
+                      <th className="px-4 py-2.5 text-center whitespace-nowrap">Status</th>
                     </tr>
-                  ) : (
-                    rekapData.map((item, idx) => {
-                      const isLow = item.currentStock <= item.minimumStock;
-                      return (
-                        <tr key={item.id} className="hover:bg-slate-50/50">
-                          <td className="px-4 py-2.5 text-slate-500 text-center">
-                            {idx + 1}
-                          </td>
-                          <td className="px-4 py-2.5 font-mono font-medium text-slate-700">
-                            {item.code}
-                          </td>
-                          <td className="px-4 py-2.5 font-semibold text-slate-900">
-                            {item.name}
-                          </td>
-                          <td className="px-4 py-2.5 text-right text-emerald-700 font-bold">
-                            {item.totalIn > 0 ? `+${formatNumber(item.totalIn)}` : "0"}{" "}
-                            <span className="text-[10px] text-slate-400 font-normal">
-                              {item.unitSymbol}
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {rekapData.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={7}
+                          className="px-6 py-12 text-center text-slate-400 text-xs"
+                        >
+                          <p className="font-semibold text-slate-600 text-sm">
+                            Tidak ada aktivitas mutasi barang masuk atau keluar
+                          </p>
+                          <p className="mt-1 text-slate-400">
+                            Pada periode tanggal{" "}
+                            <span className="font-medium text-slate-600">
+                              {filterMode === "single"
+                                ? formatDate(activeStart)
+                                : `${formatDate(activeStart)} s/d ${formatDate(activeEnd)}`}
                             </span>
-                          </td>
-                          <td className="px-4 py-2.5 text-right text-amber-700 font-bold">
-                            {item.totalOut > 0 ? `-${formatNumber(item.totalOut)}` : "0"}{" "}
-                            <span className="text-[10px] text-slate-400 font-normal">
-                              {item.unitSymbol}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2.5 text-right font-black text-slate-900">
-                            {formatNumber(item.currentStock)}{" "}
-                            <span className="text-[10px] font-normal text-slate-500">
-                              {item.unitSymbol}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2.5 text-center">
-                            {isLow ? (
-                              <Badge variant="danger" className="text-[10px] py-0">
-                                Stok Kritis
-                              </Badge>
-                            ) : (
-                              <Badge variant="success" className="text-[10px] py-0">
-                                Aman
-                              </Badge>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
+                          </p>
+                          {onlyMutated && (
+                            <button
+                              type="button"
+                              onClick={() => setOnlyMutated(false)}
+                              className="mt-3 text-xs text-amber-600 hover:underline print:hidden font-medium cursor-pointer"
+                            >
+                              Klik di sini untuk melihat saldo seluruh katalog barang &rarr;
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ) : (
+                      rekapData.map((item, idx) => {
+                        const isLow = item.currentStock <= item.minimumStock;
+                        return (
+                          <tr key={item.id} className="hover:bg-slate-50/50">
+                            <td className="px-4 py-2.5 text-slate-500 text-center whitespace-nowrap">
+                              {idx + 1}
+                            </td>
+                            <td className="px-4 py-2.5 font-mono font-medium text-slate-700 whitespace-nowrap">
+                              {item.code}
+                            </td>
+                            <td className="px-4 py-2.5 font-semibold text-slate-900">
+                              {item.name}
+                            </td>
+                            <td className="px-4 py-2.5 text-right text-emerald-700 font-bold whitespace-nowrap">
+                              {item.totalIn > 0 ? `+${formatNumber(item.totalIn)}` : "0"}{" "}
+                              <span className="text-[10px] text-slate-400 font-normal">
+                                {item.unitSymbol}
+                              </span>
+                            </td>
+                            <td className="px-4 py-2.5 text-right text-amber-700 font-bold whitespace-nowrap">
+                              {item.totalOut > 0 ? `-${formatNumber(item.totalOut)}` : "0"}{" "}
+                              <span className="text-[10px] text-slate-400 font-normal">
+                                {item.unitSymbol}
+                              </span>
+                            </td>
+                            <td className="px-4 py-2.5 text-right font-black text-slate-900 whitespace-nowrap">
+                              {formatNumber(item.currentStock)}{" "}
+                              <span className="text-[10px] font-normal text-slate-500">
+                                {item.unitSymbol}
+                              </span>
+                            </td>
+                            <td className="px-4 py-2.5 text-center whitespace-nowrap">
+                              {isLow ? (
+                                <Badge variant="danger" className="text-[10px] py-0">
+                                  Stok Kritis
+                                </Badge>
+                              ) : (
+                                <Badge variant="success" className="text-[10px] py-0">
+                                  Aman
+                                </Badge>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
@@ -563,72 +570,79 @@ export function ReportView({
               activeTab === "detail" ? "block" : "hidden print:block"
             }`}
           >
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">
-              II. Rincian Kronologis Mutasi Transaksi
-            </h3>
-            <div className="border border-slate-200 rounded-lg overflow-hidden">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
-                  <tr>
-                    <th className="px-3 py-2.5">Tanggal</th>
-                    <th className="px-3 py-2.5 text-center">Jenis</th>
-                    <th className="px-3 py-2.5">No. Referensi (SJ / SPB)</th>
-                    <th className="px-3 py-2.5">Pihak / Alokasi Proyek</th>
-                    <th className="px-3 py-2.5">Material</th>
-                    <th className="px-3 py-2.5 text-right">Kuantitas</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {allChronologicalMovements.length === 0 ? (
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                II. Rincian Kronologis Mutasi Transaksi
+              </h3>
+              <span className="sm:hidden inline-flex items-center gap-1 text-[10px] text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/80 font-medium">
+                ↔ Geser tabel ke kanan
+              </span>
+            </div>
+            <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[720px] text-left text-xs">
+                  <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
                     <tr>
-                      <td
-                        colSpan={6}
-                        className="px-4 py-8 text-center text-slate-400 text-xs"
-                      >
-                        Tidak ada transaksi surat jalan masuk atau SPB keluar pada tanggal yang dipilih.
-                      </td>
+                      <th className="px-3 py-2.5 whitespace-nowrap">Tanggal</th>
+                      <th className="px-3 py-2.5 text-center whitespace-nowrap">Jenis</th>
+                      <th className="px-3 py-2.5 whitespace-nowrap">No. Referensi (SJ / SPB)</th>
+                      <th className="px-3 py-2.5 whitespace-nowrap">Pihak / Alokasi Proyek</th>
+                      <th className="px-3 py-2.5 whitespace-nowrap">Material</th>
+                      <th className="px-3 py-2.5 text-right whitespace-nowrap">Kuantitas</th>
                     </tr>
-                  ) : (
-                    allChronologicalMovements.map((mov) => {
-                      const item = items.find((i) => i.id === mov.itemId);
-                      return (
-                        <tr key={mov.id} className="hover:bg-slate-50/50">
-                          <td className="px-3 py-2 text-slate-600 font-medium">
-                            {formatDate(mov.date)}
-                          </td>
-                          <td className="px-3 py-2 text-center">
-                            {mov.type === "IN" ? (
-                              <span className="inline-block px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                                MASUK
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {allChronologicalMovements.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={6}
+                          className="px-4 py-8 text-center text-slate-400 text-xs"
+                        >
+                          Tidak ada transaksi surat jalan masuk atau SPB keluar pada tanggal yang dipilih.
+                        </td>
+                      </tr>
+                    ) : (
+                      allChronologicalMovements.map((mov) => {
+                        const item = items.find((i) => i.id === mov.itemId);
+                        return (
+                          <tr key={mov.id} className="hover:bg-slate-50/50">
+                            <td className="px-3 py-2 text-slate-600 font-medium whitespace-nowrap">
+                              {formatDate(mov.date)}
+                            </td>
+                            <td className="px-3 py-2 text-center whitespace-nowrap">
+                              {mov.type === "IN" ? (
+                                <span className="inline-block px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                                  MASUK
+                                </span>
+                              ) : (
+                                <span className="inline-block px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[10px]">
+                                  KELUAR
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-3 py-2 font-mono font-bold text-slate-800 whitespace-nowrap">
+                              {mov.ref}
+                            </td>
+                            <td className="px-3 py-2 text-slate-700 whitespace-nowrap">
+                              <span className="font-semibold">{mov.party}</span>
+                              <span className="block text-[10px] text-slate-400">
+                                {mov.info}
                               </span>
-                            ) : (
-                              <span className="inline-block px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[10px]">
-                                KELUAR
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-3 py-2 font-mono font-bold text-slate-800">
-                            {mov.ref}
-                          </td>
-                          <td className="px-3 py-2 text-slate-700">
-                            <span className="font-semibold">{mov.party}</span>
-                            <span className="block text-[10px] text-slate-400">
-                              {mov.info}
-                            </span>
-                          </td>
-                          <td className="px-3 py-2 font-semibold text-slate-800">
-                            {item?.name || "Material"}
-                          </td>
-                          <td className="px-3 py-2 text-right font-black text-slate-900">
-                            {mov.type === "IN" ? "+" : "-"}
-                            {formatNumber(mov.quantity)} {item?.unitSymbol || ""}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
+                            </td>
+                            <td className="px-3 py-2 font-semibold text-slate-800">
+                              {item?.name || "Material"}
+                            </td>
+                            <td className="px-3 py-2 text-right font-black text-slate-900 whitespace-nowrap">
+                              {mov.type === "IN" ? "+" : "-"}
+                              {formatNumber(mov.quantity)} {item?.unitSymbol || ""}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
