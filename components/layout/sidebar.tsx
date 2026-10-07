@@ -17,6 +17,7 @@ import {
   User,
   UserCog,
   ChevronRight,
+  Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logoutAction } from "@/actions/auth";
@@ -49,6 +50,7 @@ const navItems = [
       { href: "/reports", label: "Laporan Mutasi", icon: FileText },
       { href: "/suppliers", label: "Supplier & Vendor", icon: Truck },
       { href: "/categories", label: "Kategori & Satuan", icon: Layers },
+      { href: "/about", label: "Tentang Sistem", icon: Info },
     ],
   },
   {
